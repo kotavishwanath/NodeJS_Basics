@@ -25,70 +25,15 @@ app.get("/", (req, res) => {
 //   res.json([user1,user2,user3,parent])
 // })
 
-app.post("/user_create", (req,res) => {
-  console.log("Routing Works")
-  console.log("First Name: " + req.body.create_first_name )
+const router = require('./Routes/users')
 
-  const firstName = req.body.create_first_name
-  const lastName = req.body.create_last_name
-
-  const connection = getConnection()
-  const queryStr = "INSERT INTO users (first_Name, last_name) VALUES (?, ?)"
-  connection.query(queryStr, [firstName, lastName], (err, result, fields) => {
-    if (err){
-      console.log("Failed to Insert the User: "+ err)
-      res.sendStatus(500)
-      return
-    }
-    console.log("Successfully Inserted a new user with id: "+ result.insertId);
-    res.end();
-  })
+router.get('/messages2', (req, res) => {
+  console.log("Messages 2 response ")
+  res.end()
 })
 
-function getConnection(){
-  return mysql.createConnection({
-    host:'localhost',
-    user:'root',
-    password:'root',
-    database:'basics_mysql',
-    port:'8889'
-  })
-}
+app.use(router)
 
-app.get("/users/:id", (req,res)=> {
-
-  console.log("Fetching User with Id: "+req.params.id);
-
-  const connection = getConnection()
-
-  const userId = req.params.id
-  const queryString = "SELECT * FROM users WHERE id= ?"
-  connection.query(queryString,[userId],(err, rows, fields) => {
-    if (err){
-      console.log("Failed to fetch query of Id: "+err);
-      res.sendStatus(500) //500 is the HTTP status code
-      res.end()
-      return
-    }
-    console.log("I think we fetched users successfully");
-    const users = rows.map((row) => {
-      return {firstName: row.first_name, lastName: row.last_name}
-    })
-    res.json(users)
-  })
-})
-
-app.get("/users", (req, res) => {
-  const queryString = "SELECT * FROM users"
-  getConnection().query(queryString, (err, rows, fields) =>{
-    if(err){
-      console.log("Failed to fetch details")
-      res.sendStatus(500)
-      return
-    }
-    res.json(rows)
-  })
-})
 
 //Localhost 3004
 app.listen(3004, () => {
